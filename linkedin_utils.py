@@ -13,17 +13,19 @@ def authenticate():
     print("🔐 Please implement OAuth if token not found.")
 
 def get_user_urn(token):
-    url = "https://api.linkedin.com/v2/me"
+    url = "https://api.linkedin.com/v2/userinfo"
     headers = {
         "Authorization": f"Bearer {token}"
     }
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        user_id = response.json()["id"]
-        return f"urn:li:person:{user_id}"
-    else:
-        print("❌ Failed to get URN:", response.text)
-        return None
+    # response = requests.get(url, headers=headers)
+    # user_data = response.json()
+    # if response.status_code == 200:
+        # if 'sub' in user_data:
+    person_urn = f"urn:li:organization:107168982"
+    return person_urn
+    # else:
+    #     print("❌ Failed to get URN:", response.text)
+    #     return None
 
 def post_to_linkedin(token, urn, content):
     url = "https://api.linkedin.com/v2/ugcPosts"
@@ -52,5 +54,7 @@ def post_to_linkedin(token, urn, content):
     res = requests.post(url, headers=headers, json=data)
     if res.status_code == 201:
         print("✅ Post successful!")
+        print(res.headers)
+        exit
     else:
         print("❌ Post failed:", res.status_code, res.text)

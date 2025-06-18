@@ -1,7 +1,9 @@
 import openai
+import os
 import schedule
 import time
 import json
+from oauth import LinkedInOAuthClient
 from linkedin_utils import load_token, authenticate, get_user_urn, post_to_linkedin
 
 # Load config
@@ -11,41 +13,28 @@ from openai import OpenAI
 config = json.load(open("config.json"))
 
 # Initialize OpenAI client with your API key
-client = OpenAI(api_key=config["openai_api_key"])
+CLIENT_ID = os.environ.get("CLIENT_ID")
+CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
+REDIRECT_URI = os.environ.get("REDIRECT_URI", "http://localhost:8000/callback")
+SCOPE = os.environ.get("SCOPE")
+TOKEN_PATH = "linkedin_token.json"
+oauth_client = LinkedInOAuthClient(
+    client_id=CLIENT_ID,   
+    client_secret=CLIENT_SECRET,
+    redirect_uri=REDIRECT_URI,
+    scope=SCOPE,
+    token_path=TOKEN_PATH
+)
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 def generate_post():
     prompt = (
-         """You are an AI content generator helping me write LinkedIn posts for each blog article based on tools listed on Helpothon.com. For each tool, generate a short LinkedIn post using the following format:
-
-        1. Tone: Conversational, humorous, and storytelling.
-        2. Audience: Young professionals, developers, students, and creators.
-3. Style:
-   - Start with a quirky or funny story, personal experience, or observation that loosely relates to the tool’s function.
-   - Smoothly transition to what the tool does.
-   - Mention that a full blog is available.
-   - End with a light CTA (e.g., "Check it out", "Link in comments", "Ever tried something like this?").
-
-4. Output: 1 short LinkedIn post (~100–150 words) per tool.
-
-5. Tools (from Helpothon.com) to generate posts for:
-   - Scanmeee
-   - Formatweaver
-   - Snapcompress
-   - Pixelartz
-   - Allrandomtools
-   - CasualGameZone
-   - Calculatedaily
-   - Picxcraft
-   - Aimageasy
-   - Pichaverse
-   - PrettyParser
-   - MoodyBuddy
-
-Ensure each post is unique and lightly witty, suitable for LinkedIn. Keep hashtags optional and minimal."""
+         """My name is Debraj, just add one line after this"""
     )
 
     response = client.chat.completions.create(
         model="gpt-4",
+        max_completion_tokens=2800,
         messages=[
             {"role": "user", "content": prompt}
         ]
@@ -53,15 +42,15 @@ Ensure each post is unique and lightly witty, suitable for LinkedIn. Keep hashta
     return response.choices[0].message.content
 
 def job():
-    print("⚙️ Generating daily post...")
+    print("Generating daily post...")
     post = generate_post()
-    print("📝 Generated:\n", post)
+    print("Generated:\n", post)
 
-    token = load_token()
+    token =oauth_client.get_access_token()
     if not token:
-        print("🔐 No token found. Please authenticate once.")
+        print("No token found. Please authenticate once.")
         authenticate()
-        token = load_token()
+        token =oauth_client.get_access_token()
 
     urn = get_user_urn(token)
     print("📤 Posting to LinkedIn...")
@@ -72,6 +61,6 @@ if __name__ == "__main__":
     schedule.every().day.at("10:00").do(job)
     print("✅ Scheduler started. Will post daily at 10:00 AM.")
     job()  # First post now
-    while True:
-        schedule.run_pending()
-        time.sleep(60)
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(60)

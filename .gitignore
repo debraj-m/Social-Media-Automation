@@ -1,2 +1,4 @@
+.env
 config.json
-oauth.py
+.venv
+linkedin_token.json
