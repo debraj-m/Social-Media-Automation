@@ -1,6 +1,6 @@
 .env
 config.json
-/.venv
+.venv
 linkedin_token.json
 features.md
 **__pycache__**
