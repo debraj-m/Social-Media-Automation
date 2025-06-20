@@ -1,33 +1,19 @@
-import json
 import requests
+from typing import Optional
 
-def load_token():
-    try:
-        with open("config.json") as f:
-            config = json.load(f)
-            return config["linkedin_access_token"]
-    except:
-        return None
 
-def authenticate():
-    print("🔐 Please implement OAuth if token not found.")
-
-def get_user_urn(token):
+def get_user_urn(token: str) -> Optional[str]:
+    """Get the LinkedIn user URN using the access token."""
     url = "https://api.linkedin.com/v2/userinfo"
-    headers = {
-        "Authorization": f"Bearer {token}"
-    }
-    # response = requests.get(url, headers=headers)
-    # user_data = response.json()
-    # if response.status_code == 200:
-        # if 'sub' in user_data:
-    person_urn = f"urn:li:organization:107168982"
-    return person_urn
-    # else:
-    #     print("❌ Failed to get URN:", response.text)
-    #     return None
+    headers = {"Authorization": f"Bearer {token}"}
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        user_data = response.json()
+        return user_data.get("sub")
+    return None
 
-def post_to_linkedin(token, urn, content):
+
+def post_to_linkedin(token: str, urn: str, content: str) -> bool:
     url = "https://api.linkedin.com/v2/ugcPosts"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -55,6 +41,6 @@ def post_to_linkedin(token, urn, content):
     if res.status_code == 201:
         print("✅ Post successful!")
         print(res.headers)
-        exit
+        
     else:
         print("❌ Post failed:", res.status_code, res.text)

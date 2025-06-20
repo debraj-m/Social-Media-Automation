@@ -19,7 +19,6 @@ load_dotenv()
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
 class TwitterBot:
     def __init__(self):
         self.email = os.getenv('TWITTER_EMAIL')
@@ -435,37 +434,3 @@ class TwitterBot:
         if self.driver:
             self.driver.quit()
             logger.info("Browser closed")
-
-def main():
-    """Main function to run the Twitter bot"""
-    
-    # Example topics - customize these based on your niche
-    topics = [
-        "artificial intelligence and its impact on society",
-        "productivity tips for remote work",
-        "the future of technology",
-        "interesting facts about space",
-        "motivational thoughts for entrepreneurs",
-        "latest trends in software development"
-    ]
-    
-    bot = TwitterBot()
-    
-    try:
-        # Run automation - post 1 tweet
-        success = bot.run_automation(
-            topics=topics,
-            post_count=1,
-            delay_between_posts=True
-        )
-        
-        if success:
-            print("✅ Twitter automation completed successfully!")
-        else:
-            print("❌ Twitter automation failed!")
-            
-    except Exception as e:
-        print(f"❌ Error running automation: {e}")
-
-if __name__ == "__main__":
-    main()
