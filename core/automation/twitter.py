@@ -13,9 +13,11 @@ from openai import OpenAI
 from datetime import datetime
 import logging
 
+from core.content_generation.generator import ContentGenerator
+
 # Load environment variables
 load_dotenv()
-
+# te
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -30,9 +32,10 @@ class TwitterBot:
         
         # Initialize OpenAI client
         self.openai_client = OpenAI(api_key=self.openai_api_key)
-        
         # Setup Chrome options
         self.chrome_options = Options()
+        self.chrome_options.add_argument('--headless=new')  # use `--headless` for older Chrome versions
+
         self.chrome_options.add_argument('--disable-blink-features=AutomationControlled')
         self.chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         self.chrome_options.add_experimental_option('useAutomationExtension', False)
@@ -89,38 +92,6 @@ class TwitterBot:
             logger.error(f"Failed to initialize Chrome driver: {e}")
             raise
     
-    def generate_content(self, topic=None, style="casual", max_length=250):
-        """Generate content using OpenAI"""
-        try:
-            if topic:
-                prompt = f"Write a {style} tweet about {topic}. Keep it under {max_length} characters, engaging, and appropriate for Twitter. Do not use emojis or special unicode characters. Use only standard text characters."
-            else:
-                prompt = f"Write an engaging {style} tweet about current trends, technology, or interesting thoughts. Keep it under {max_length} characters and make it thought-provoking or entertaining. Do not use emojis or special unicode characters. Use only standard text characters."
-            
-            response = self.openai_client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are a social media content creator who writes engaging, authentic tweets that sound natural and human. Do not use emojis or special unicode characters in your responses."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=100,
-                temperature=0.8
-            )
-            
-            content = response.choices[0].message.content.strip()
-            # Remove quotes if OpenAI wrapped the content
-            if content.startswith('"') and content.endswith('"'):
-                content = content[1:-1]
-            
-            # Clean the content to ensure it's safe for Selenium
-            content = self.clean_text_for_selenium(content)
-            
-            logger.info(f"Generated content: {content}")
-            return content
-            
-        except Exception as e:
-            logger.error(f"Failed to generate content: {e}")
-            return None
     
     def login_to_twitter(self):
         """Login to Twitter"""
@@ -404,7 +375,8 @@ class TwitterBot:
                 
                 # Generate content
                 topic = random.choice(topics) if topics else None
-                content = self.generate_content(topic=topic)
+                generator= ContentGenerator(self.openai_api_key)
+                content = generator.generate_content(platform="twitter")
                 
                 if not content:
                     logger.error("Failed to generate content, skipping this post")

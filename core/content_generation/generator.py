@@ -2,11 +2,26 @@ from openai import OpenAI
 from typing import Optional
 import re
 import logging
+import random
 
 class ContentGenerator:
     def __init__(self, openai_api_key: str):
         self.openai_client = OpenAI(api_key=openai_api_key)
         self.logger = logging.getLogger(__name__)
+        self.products = [
+            {"name": "Helpothon", "link": "https://helpothon.com/"},
+            {"name": "Scanmeee", "link": "https://scanmeee.com/"},
+            {"name": "FormatWeaver", "link": "https://formatweaver.com/"},
+            {"name": "SnapCompress", "link": "https://snapcompress.com/"},
+            {"name": "PixelArtz", "link": "https://pixelartz.com/"},
+            {"name": "All Random Tools", "link": "https://allrandomtools.com/"},
+            {"name": "Casual Game Zone", "link": "https://casualgamezone.com/"},
+            {"name": "Calculate Daily", "link": "https://calculatedaily.com/"},
+            {"name": "PicxCraft", "link": "https://picxcraft.com/"},
+            {"name": "AImageasy", "link": "https://aimageasy.com/"},
+            {"name": "PrettyParser", "link": "https://prettyparser.com/"}
+        ]
+
 
     @staticmethod
     def clean_text_for_selenium(text: str) -> str:
@@ -36,30 +51,75 @@ class ContentGenerator:
         cleaned_text = ''.join(char for char in cleaned_text if ord(char) < 65536)
         return cleaned_text
 
-    def generate_content(self, topic: Optional[str] = None, style: str = "casual", max_length: int = 250) -> Optional[str]:
-        """Generate content using OpenAI"""
+    # def generate_content(self, topic: Optional[str] = None, style: str = "casual", max_length: int = 250) -> Optional[str]:
+    #     """Generate content using OpenAI"""
+    #     try:
+    #         if topic:
+    #             prompt = f"Write a {style} tweet about {topic}. Limit to {max_length} characters. No emojis or special unicode."
+    #         else:
+    #             prompt = f"Write a {style} tweet. Limit to {max_length} characters. No emojis or special unicode."
+    #         response = self.openai_client.chat.completions.create(
+    #             model="gpt-3.5-turbo",
+    #             messages=[
+    #                 {"role": "system", "content": "You are a social media content creator who writes engaging, authentic tweets that sound natural and human. Do not use emojis or special unicode characters in your responses."},
+    #                 {"role": "user", "content": prompt}
+    #             ],
+    #             max_tokens=100,
+    #             temperature=0.8
+    #         )
+    #         content = response.choices[0].message.content.strip()
+    #         if content.startswith('"') and content.endswith('"'):
+    #             content = content[1:-1]
+    #         content = self.clean_text_for_selenium(content)
+    #         self.logger.info(f"Generated content: {content}")
+    #         return content
+    #     except Exception as e:
+    #         self.logger.error(f"Failed to generate content: {e}")
+    #         return None
+    def generate_content(self,
+                         style: str = "casual",
+                         max_length: int = 250,
+                         platform: str = "linkedin") -> Optional[str]:
+        """Generate promotional content for a random Helpothon product, tailored by platform"""
         try:
-            if topic:
-                prompt = f"Write a {style} tweet about {topic}. Limit to {max_length} characters. No emojis or special unicode."
+            product = random.choice(self.products)
+            topic = f"the product '{product['name']}' from Helpothon — check it out: {product['link']}"
+
+            # Adjust prompt based on platform
+            if platform.lower() == "linkedin":
+                prompt = (
+                    f"Write a {style} LinkedIn post promoting {topic}. "
+                    f"Make it professional yet engaging. Keep it concise, within {max_length} characters. "
+                    f"No emojis or special unicode."
+                    f"Add relevant hashtags like #Helpothon, #AI, #TechInnovation, #Productivity, #SoftwareDevelopment."
+                    f"Enure that you add links of the respective products while posting"
+                )
+            elif platform.lower() == "twitter":
+                prompt = (
+                    f"Write a {style} tweet promoting {topic}. "
+                    f"Limit to {max_length} characters. No emojis or special unicode."
+                )
             else:
-                prompt = f"Write a {style} tweet. Limit to {max_length} characters. No emojis or special unicode."
+                prompt = (
+                    f"Write a {style} social media post promoting {topic}. "
+                    f"Limit to {max_length} characters. No emojis or special unicode."
+                )
+
             response = self.openai_client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": "You are a social media content creator who writes engaging, authentic tweets that sound natural and human. Do not use emojis or special unicode characters in your responses."},
+                    {
+                        "role": "system",
+                        "content": "You are a social media content creator who writes engaging, authentic content that sounds natural and human. Do not use emojis or special unicode characters."
+                    },
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=100,
+                max_tokens=150,
                 temperature=0.8
             )
-            content = response.choices[0].message.content.strip()
-            if content.startswith('"') and content.endswith('"'):
-                content = content[1:-1]
-            content = self.clean_text_for_selenium(content)
-            self.logger.info(f"Generated content: {content}")
-            return content
+            return response.choices[0].message.content.strip()
         except Exception as e:
-            self.logger.error(f"Failed to generate content: {e}")
+            print(f"Error generating content: {e}")
             return None
 
     def generate_post(self, prompt: str) -> Optional[str]:
