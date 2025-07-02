@@ -5,3 +5,10 @@ openai
 selenium
 webdriver_manager
 dotenv
+# For API integrations
+python-dotenv
+# For Mastodon
+Mastodon.py
+# For Medium, Dev.to, Hashnode, Ghost, WordPress (all use requests, already included)
+# For Reddit (optional: praw, but using requests in scaffolding)
+# For Pinterest (requests)
