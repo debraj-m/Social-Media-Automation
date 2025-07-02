@@ -20,6 +20,7 @@ def post_to_medium(token: str, user_id: str, title: str, content: str, tags: lis
     res = requests.post(url, headers=headers, json=data)
     if res.status_code == 201:
         print("✅ Medium post successful!")
+        print(res.headers)
         return True
     else:
         print("❌ Medium post failed:", res.status_code, res.text)

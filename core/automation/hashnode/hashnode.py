@@ -33,6 +33,7 @@ def post_to_hashnode(api_key: str, publication_id: str, title: str, content_mark
     res = requests.post(url, headers=headers, json=data)
     if res.status_code == 200 and 'errors' not in res.json():
         print("✅ Hashnode post successful!")
+        print(res.headers)
         return True
     else:
         print("❌ Hashnode post failed:", res.status_code, res.text)

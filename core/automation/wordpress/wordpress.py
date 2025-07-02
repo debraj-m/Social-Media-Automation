@@ -16,6 +16,7 @@ def post_to_wordpress(site_url: str, token: str, title: str, content: str, statu
     res = requests.post(url, headers=headers, json=data)
     if res.status_code in (200, 201):
         print("✅ WordPress post successful!")
+        print(res.headers)
         return True
     else:
         print("❌ WordPress post failed:", res.status_code, res.text)

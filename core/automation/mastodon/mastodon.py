@@ -14,6 +14,7 @@ def post_to_mastodon(token: str, instance_url: str, status: str) -> bool:
     res = requests.post(url, headers=headers, json=data)
     if res.status_code == 200:
         print("✅ Mastodon post successful!")
+        print(res.headers)
         return True
     else:
         print("❌ Mastodon post failed:", res.status_code, res.text)

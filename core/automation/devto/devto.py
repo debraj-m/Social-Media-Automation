@@ -20,6 +20,7 @@ def post_to_devto(api_key: str, title: str, body_markdown: str, tags: list = Non
     res = requests.post(url, headers=headers, json=data)
     if res.status_code == 201:
         print("✅ Dev.to post successful!")
+        print(res.headers)
         return True
     else:
         print("❌ Dev.to post failed:", res.status_code, res.text)

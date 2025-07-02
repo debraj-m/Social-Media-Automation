@@ -20,6 +20,7 @@ def post_to_ghost(api_url: str, admin_api_key: str, title: str, html: str, tags:
     res = requests.post(url, headers=headers, json=data)
     if res.status_code in (200, 201):
         print("✅ Ghost post successful!")
+        print(res.headers)
         return True
     else:
         print("❌ Ghost post failed:", res.status_code, res.text)

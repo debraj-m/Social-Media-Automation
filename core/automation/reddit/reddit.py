@@ -17,6 +17,7 @@ def post_to_reddit(token: str, subreddit: str, title: str, text: str) -> bool:
     res = requests.post(url, headers=headers, data=data)
     if res.status_code == 200:
         print("✅ Reddit post successful!")
+        print(res.headers)
         return True
     else:
         print("❌ Reddit post failed:", res.status_code, res.text)
