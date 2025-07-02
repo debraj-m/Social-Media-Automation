@@ -117,78 +117,7 @@ class ContentGenerator:
             }
         ]
 
-        self.platform_configs = {
-            "linkedin": {
-                "max_length": 1500,
-                "optimal_length": 1000,
-                "hashtag_limit": 15,
-                "tone": "professional_storytelling",
-                "client_id": os.getenv("LINKEDIN_CLIENT_ID", ""),
-                "client_secret": os.getenv("LINKEDIN_CLIENT_SECRET", ""),
-                "redirect_uri": os.getenv("LINKEDIN_REDIRECT_URI", ""),
-                "scope": os.getenv("LINKEDIN_SCOPE", "")
-            },
-            "twitter": {
-                "max_length": 280,
-                "optimal_length": 250,
-                "hashtag_limit": 2,
-                "tone": "concise_impactful"
-            },
-            "pinterest": {
-                "client_id": os.getenv("PINTEREST_CLIENT_ID", ""),
-                "client_secret": os.getenv("PINTEREST_CLIENT_SECRET", ""),
-                "access_token": os.getenv("PINTEREST_ACCESS_TOKEN", ""),
-                "max_length": 500,
-                "tone": "visual_inspirational"
-            },
-            "reddit": {
-                "client_id": os.getenv("REDDIT_CLIENT_ID", ""),
-                "client_secret": os.getenv("REDDIT_CLIENT_SECRET", ""),
-                "user_agent": os.getenv("REDDIT_USER_AGENT", ""),
-                "username": os.getenv("REDDIT_USERNAME", ""),
-                "password": os.getenv("REDDIT_PASSWORD", ""),
-                "max_length": 10000,
-                "tone": "community_discussion"
-            },
-            "mastodon": {
-                "client_id": os.getenv("MASTODON_CLIENT_ID", ""),
-                "client_secret": os.getenv("MASTODON_CLIENT_SECRET", ""),
-                "access_token": os.getenv("MASTODON_ACCESS_TOKEN", ""),
-                "instance_url": os.getenv("MASTODON_INSTANCE_URL", ""),
-                "max_length": 500,
-                "tone": "open_social"
-            },
-            "medium": {
-                "integration_token": os.getenv("MEDIUM_INTEGRATION_TOKEN", ""),
-                "max_length": 5000,
-                "tone": "storytelling"
-            },
-            "devto": {
-                "api_key": os.getenv("DEVTO_API_KEY", ""),
-                "max_length": 5000,
-                "tone": "developer_community"
-            },
-            "hashnode": {
-                "api_key": os.getenv("HASHNODE_API_KEY", ""),
-                "max_length": 5000,
-                "tone": "tech_blog"
-            },
-            "ghost": {
-                "admin_api_key": os.getenv("GHOST_ADMIN_API_KEY", ""),
-                "api_url": os.getenv("GHOST_API_URL", ""),
-                "max_length": 5000,
-                "tone": "blogging"
-            },
-            "wordpress": {
-                "client_id": os.getenv("WORDPRESS_CLIENT_ID", ""),
-                "client_secret": os.getenv("WORDPRESS_CLIENT_SECRET", ""),
-                "username": os.getenv("WORDPRESS_USERNAME", ""),
-                "password": os.getenv("WORDPRESS_PASSWORD", ""),
-                "site_url": os.getenv("WORDPRESS_SITE_URL", ""),
-                "max_length": 5000,
-                "tone": "blogging"
-            }
-        }
+      
 
     @staticmethod
     def clean_text_for_selenium(text: str) -> str:
@@ -319,7 +248,6 @@ Requirements:
         try:
             product = random.choice(self.products)
             platform = platform.lower()
-            config = self.platform_configs.get(platform, self.platform_configs["linkedin"])
 
             if platform == "linkedin":
                 prompt = self.generate_linkedin_story_post(product)

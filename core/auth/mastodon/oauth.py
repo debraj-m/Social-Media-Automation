@@ -1,12 +1,11 @@
 import os
 import requests
 import json
+import time
+from urllib.parse import urlencode
 from typing import Optional
 
 class MastodonOAuthClient:
-    AUTH_URL = ""  # Mastodon uses instance-specific URLs
-    TOKEN_URL = ""  # Mastodon uses instance-specific URLs
-
     def __init__(self, client_id: str, client_secret: str, instance_url: str, redirect_uri: str, scope: str, token_path: str = "env/mastodon_token.json"):
         self.client_id = client_id
         self.client_secret = client_secret
@@ -24,7 +23,6 @@ class MastodonOAuthClient:
             "redirect_uri": self.redirect_uri,
             "scope": self.scope,
         }
-        from urllib.parse import urlencode
         return f"{self.AUTH_URL}?{urlencode(params)}"
 
     def exchange_code_for_token(self, code: str) -> Optional[dict]:
@@ -39,12 +37,18 @@ class MastodonOAuthClient:
             response = requests.post(self.TOKEN_URL, data=data)
             response.raise_for_status()
             token_data = response.json()
+            token_data["created_at"] = int(time.time())
             return token_data
         except requests.RequestException as e:
             print(f"Error exchanging code for token: {e}")
             if hasattr(e.response, 'text'):
                 print(f"Response: {e.response.text}")
             return None
+
+    def is_token_expired(self, token_data: dict) -> bool:
+        created_at = token_data.get("created_at", 0)
+        expires_in = token_data.get("expires_in", 0)
+        return time.time() >= (created_at + expires_in)
 
     def load_token(self) -> Optional[dict]:
         if not os.path.exists(self.token_path):
@@ -71,7 +75,7 @@ class MastodonOAuthClient:
 
     def get_access_token(self) -> str:
         token_data = self.load_token()
-        if not token_data:
+        if not token_data or self.is_token_expired(token_data):
             print("No valid token found. Please re-authorize.")
             code = self.prompt_authorization()
             token_data = self.exchange_code_for_token(code)
