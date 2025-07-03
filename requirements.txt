@@ -12,3 +12,6 @@ Mastodon.py
 # For Medium, Dev.to, Hashnode, Ghost, WordPress (all use requests, already included)
 # For Reddit (optional: praw, but using requests in scaffolding)
 # For Pinterest (requests)
+google-auth
+google-auth-oauthlib
+google-api-python-client

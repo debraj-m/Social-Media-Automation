@@ -19,102 +19,6 @@ class ContentGenerator:
                 "target_audience": "Businesses and communities seeking positive technological impact",
                 "story_angle": "Mission-driven technology company spreading smiles worldwide"
             },
-            {
-                "name": "Scanmeee",
-                "link": "https://scanmeee.com/",
-                "description": "Create and share fun, creative QR codes effortlessly",
-                "key_features": ["QR code generation", "Creative designs", "Easy sharing"],
-                "target_audience": "Marketers, event organizers, creative professionals",
-                "story_angle": "Bridging physical and digital worlds through creative QR codes"
-            },
-            {
-                "name": "FormatWeaver",
-                "link": "https://formatweaver.com/",
-                "description": "Any-to-any file format converter that processes files in your browser",
-                "key_features": ["Universal file conversion", "Browser-based processing", "Privacy-focused"],
-                "target_audience": "Professionals, students, content creators",
-                "story_angle": "Seamless file transformation without compromising privacy"
-            },
-            {
-                "name": "SnapCompress",
-                "link": "https://snapcompress.com/",
-                "description": "Compress files quickly and efficiently to save space and boost productivity",
-                "key_features": ["File compression", "Space optimization", "Productivity boost"],
-                "target_audience": "Professionals, developers, content creators",
-                "story_angle": "Maximizing productivity through smart file management"
-            },
-            {
-                "name": "PixelArtz",
-                "link": "https://pixelartz.com/",
-                "description": "Create stunning pixel art for home decor, gaming, or digital projects",
-                "key_features": ["Pixel art creation", "Gaming assets", "Digital art"],
-                "target_audience": "Game developers, digital artists, hobbyists",
-                "story_angle": "Reviving retro aesthetics in modern digital creativity"
-            },
-            {
-                "name": "All Random Tools",
-                "link": "https://allrandomtools.com/",
-                "description": "Access a comprehensive suite of utility tools for everyday tasks and creative solutions",
-                "key_features": ["Multiple utilities", "Everyday tools", "Creative solutions"],
-                "target_audience": "General users, professionals, students",
-                "story_angle": "One-stop solution for all your digital tool needs"
-            },
-            {
-                "name": "Casual Game Zone",
-                "link": "https://casualgamezone.com/",
-                "description": "Enjoy fun and engaging games for all ages to spark joy and entertainment",
-                "key_features": ["Casual gaming", "All ages", "Entertainment"],
-                "target_audience": "Families, casual gamers, entertainment seekers",
-                "story_angle": "Bringing families together through fun, accessible gaming"
-            },
-            {
-                "name": "Calculate Daily",
-                "link": "https://calculatedaily.com/",
-                "description": "Simplify daily calculations and boost productivity with intuitive tools",
-                "key_features": ["Daily calculations", "Productivity tools", "Intuitive interface"],
-                "target_audience": "Professionals, students, everyday users",
-                "story_angle": "Making complex calculations simple for everyone"
-            },
-            {
-                "name": "PicxCraft",
-                "link": "https://picxcraft.com/",
-                "description": "Craft vibrant images and pixel art for creative and gaming projects",
-                "key_features": ["Image crafting", "Pixel art", "Creative tools"],
-                "target_audience": "Digital artists, game developers, creatives",
-                "story_angle": "Empowering digital creativity through innovative image tools"
-            },
-            {
-                "name": "AImageasy",
-                "link": "https://aimageasy.com/",
-                "description": "Transform your ideas into stunning AI-generated art with ease",
-                "key_features": ["AI art generation", "Idea transformation", "Easy creation"],
-                "target_audience": "Artists, marketers, content creators",
-                "story_angle": "Democratizing art creation through AI innovation"
-            },
-            {
-                "name": "Pichaverse",
-                "link": "https://pichaverse.com/",
-                "description": "Unleash endless possibilities with crazy AI filters for your pictures",
-                "key_features": ["AI filters", "Photo transformation", "Creative effects"],
-                "target_audience": "Social media users, photographers, content creators",
-                "story_angle": "Transforming ordinary photos into extraordinary art"
-            },
-            {
-                "name": "MoodyBuddy",
-                "link": "https://moodybuddy.com/",
-                "description": "Track your mood and boost emotional well-being with AI friend Emma",
-                "key_features": ["Mood tracking", "AI companion", "Mental health support"],
-                "target_audience": "Individuals seeking mental health support, wellness enthusiasts",
-                "story_angle": "Supporting mental health through compassionate AI companionship"
-            },
-            {
-                "name": "PrettyParser",
-                "link": "https://prettyparser.com/",
-                "description": "Format and minify JSON, HTML, and XML with ease for clean, professional code",
-                "key_features": ["Code formatting", "Minification", "Developer tools"],
-                "target_audience": "Developers, programmers, technical professionals",
-                "story_angle": "Making code beautiful and professional for developers worldwide"
-            }
         ]
 
       
@@ -315,6 +219,13 @@ Requirements:
 
             content = response.choices[0].message.content.strip()
 
+            # For Blogger, convert double newlines to <p> tags for better formatting
+            if platform == "blogger":
+                # Replace double newlines or single newlines with <br> or <p> for HTML formatting
+                # First, split into paragraphs
+                paragraphs = [p.strip() for p in content.split('\n\n') if p.strip()]
+                html_content = ''.join(f'<p>{p}</p>' for p in paragraphs)
+                return html_content
             # Clean text only for Twitter or platforms that don’t support paragraphs
             return self.clean_text_for_selenium(content) if platform == "twitter" else content
 
