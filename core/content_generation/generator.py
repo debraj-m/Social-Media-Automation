@@ -244,6 +244,26 @@ Requirements:
         """Generate a WordPress blog post about the product"""
         return f"""Write a WordPress blog post about {product['name']}.\n\nDescription: {product['description']}\nKey Features: {', '.join(product['key_features'])}\nLink: {product['link']}\n\nRequirements:\n- Max 5000 characters\n- Blogging style\n- Add product link\n- No emojis or unicode\n- End with a call to action\n"""
 
+    def generate_tumblr_post(self, product: Dict) -> str:
+        """Generate a Tumblr post about the product"""
+        return f"""Write a Tumblr blog post about {product['name']}.
+\nDescription: {product['description']}\nKey Features: {', '.join(product['key_features'])}\nLink: {product['link']}\n\nRequirements:\n- Max 5000 characters\n- Blogging style\n- Add product link\n- No emojis or unicode\n- End with a call to action\n"""
+
+    def generate_blogger_post(self, product: Dict) -> str:
+        """Generate a Blogger post about the product"""
+        return f"""Write a Blogger blog post about {product['name']}.
+\nDescription: {product['description']}\nKey Features: {', '.join(product['key_features'])}\nLink: {product['link']}\n\nRequirements:\n- Max 5000 characters\n- Blogging style\n- Add product link\n- No emojis or unicode\n- End with a call to action\n"""
+
+    def generate_substack_post(self, product: Dict) -> str:
+        """Generate a Substack newsletter post about the product"""
+        return f"""Write a Substack newsletter post about {product['name']}.
+\nDescription: {product['description']}\nKey Features: {', '.join(product['key_features'])}\nLink: {product['link']}\n\nRequirements:\n- Max 5000 characters\n- Newsletter style\n- Add product link\n- No emojis or unicode\n- End with a call to action\n"""
+
+    def generate_wordpressorg_post(self, product: Dict) -> str:
+        """Generate a WordPress.org blog post about the product"""
+        return f"""Write a WordPress.org blog post about {product['name']}.
+\nDescription: {product['description']}\nKey Features: {', '.join(product['key_features'])}\nLink: {product['link']}\n\nRequirements:\n- Max 5000 characters\n- Blogging style\n- Add product link\n- No emojis or unicode\n- End with a call to action\n"""
+
     def generate_content(self, style: str = "casual", platform: str = "linkedin") -> Optional[str]:
         try:
             product = random.choice(self.products)
@@ -269,6 +289,14 @@ Requirements:
                 prompt = self.generate_ghost_post(product)
             elif platform == "wordpress":
                 prompt = self.generate_wordpress_post(product)
+            elif platform == "tumblr":
+                prompt = self.generate_tumblr_post(product)
+            elif platform == "blogger":
+                prompt = self.generate_blogger_post(product)
+            elif platform == "substack":
+                prompt = self.generate_substack_post(product)
+            elif platform == "wordpressorg":
+                prompt = self.generate_wordpressorg_post(product)
             else:
                 prompt = f"""Write a {style} post about {product['name']} from Helpothon.\n\nDescription: {product['description']}\nKey Features: {', '.join(product['key_features'])}\nLink: {product['link']}\n"""
 

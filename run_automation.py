@@ -69,11 +69,22 @@ def run_medium():
 
 def run_devto():
     openai_api_key = os.environ.get("OPENAI_API_KEY")
+    devto_api_key = os.environ.get("DEVTO_API_KEY")
+    from core.automation.devto.devto import post_to_devto
     generator = ContentGenerator(openai_api_key)
     post = generator.generate_content(platform="devto")
     print("Generated Dev.to post:\n", post)
-    # TODO: Add Dev.to API posting logic here
-    print("[Dev.to posting not yet implemented]")
+    # Auto-generate title and tags from the post content
+    title = post.split("\n")[0][:80] if post else "Automated Dev.to Post"
+    # Simple tag extraction: pick up to 3 unique words longer than 4 chars
+    import re
+    words = re.findall(r"\\b\\w{5,}\\b", post.lower())
+    tags = list(dict.fromkeys(words))[:3] if words else ["automation", "ai", "python"]
+    success = post_to_devto(devto_api_key, title, post, tags)
+    if success:
+        print("Post successful!")
+    else:
+        print("Post failed.")
 
 def run_hashnode():
     openai_api_key = os.environ.get("OPENAI_API_KEY")
