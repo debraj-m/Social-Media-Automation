@@ -2,7 +2,7 @@ import os
 import requests
 from typing import Optional
 
-def post_to_hashnode(api_key: str, title: str, content: str, tags: list) -> bool:
+def post_to_hashnode(api_key: str, title: str, content: str, tags: list, cover_image_url: Optional[str] = None) -> bool:
     """
     Create and publish an article on Hashnode using the v2 API (GraphQL).
 
@@ -11,6 +11,7 @@ def post_to_hashnode(api_key: str, title: str, content: str, tags: list) -> bool
         title (str): Title of the post
         content (str): Markdown or HTML content
         tags (list): List of tag strings
+        cover_image_url (str, optional): URL of the cover image (ignored)
 
     Returns:
         bool: True if successful, False otherwise
@@ -24,7 +25,7 @@ def post_to_hashnode(api_key: str, title: str, content: str, tags: list) -> bool
         "Content-Type": "application/json",
         "Authorization": api_key
     }
-    # Step 1: Create draft
+    # Step 1: Create draft (no cover image)
     create_draft_query = """
     mutation CreateDraft($input: CreateDraftInput!) {
       createDraft(input: $input) {
@@ -49,7 +50,7 @@ def post_to_hashnode(api_key: str, title: str, content: str, tags: list) -> bool
         data = response.json()
         if response.status_code == 200 and 'errors' not in data:
             draft_id = data['data']['createDraft']['draft']['id']
-            # Step 2: Publish draft (correct input structure)
+            # Step 2: Publish draft
             publish_query = """
             mutation PublishDraft($input: PublishDraftInput!) {
               publishDraft(input: $input) {
@@ -62,12 +63,15 @@ def post_to_hashnode(api_key: str, title: str, content: str, tags: list) -> bool
               }
             }
             """
-            publish_variables = {"input": {"draftId": draft_id}}
+            publish_input = {"draftId": draft_id}
+            publish_variables = {"input": publish_input}
             publish_payload = {"query": publish_query, "variables": publish_variables}
             publish_response = requests.post(url, json=publish_payload, headers=headers)
             publish_data = publish_response.json()
             if publish_response.status_code == 200 and 'errors' not in publish_data:
-                print("Post published successfully!", publish_data['data']['publishDraft']['post']['url'])
+                post_id = publish_data['data']['publishDraft']['post']['id']
+                post_url = publish_data['data']['publishDraft']['post']['url']
+                print("Post published successfully!", post_url)
                 return True
             else:
                 print("Hashnode publish error:", publish_response.text)
