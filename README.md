@@ -44,7 +44,6 @@ Welcome to the **AI Social Media Automation Suite** – your all-in-one solution
 |------------|------------------------------------------------------------|
 | Reddit     | https://www.reddit.com/dev/api/                            |
 | Pixelfed   | https://pypi.org/project/pixelfed-python-api/              |
-| Instagram  | https://developers.facebook.com/docs/instagram-api/        |
 | Pinterest  | https://developers.pinterest.com/docs/api/v5/              |
 | Blogger    | https://developers.google.com/blogger/docs/3.0/getting_started |
 | Mastodon   | https://docs.joinmastodon.org/client/intro/                |
